@@ -24,6 +24,6 @@ func (this *stream) Sink(sink Sink) Stream {
 	return this
 }
 
-func (this *stream) Run(strategy StreamingStrategy) error {
-	return strategy.Solve(this.sourceChan, this.handlers)
+func (this *stream) Run(strategy StreamingStrategy, errors chan error) {
+	strategy.Solve(this.sourceChan, errors, this.handlers)
 }

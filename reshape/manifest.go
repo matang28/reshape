@@ -51,9 +51,9 @@ type Stream interface {
 	Sink(sink Sink) Stream
 
 	// Will trigger the source to start generating events to be processed by the pipeline.
-	Run(strategy StreamingStrategy) error
+	Run(strategy StreamingStrategy, errors chan error)
 }
 
 type StreamingStrategy interface {
-	Solve(source <-chan interface{}, handlers []interface{}) error
+	Solve(source <-chan interface{}, errors chan error, handlers []interface{})
 }
