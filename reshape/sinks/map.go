@@ -1,21 +1,23 @@
 package sinks
 
-type KeyExtractor = func(in interface{}) (string, error)
+import "fmt"
+
+type KeyExtractor = func(in interface{}) interface{}
 
 type MapSink struct {
 	keyExtractor KeyExtractor
-	m            map[string]interface{}
+	m            map[interface{}]interface{}
 }
 
 func NewMapSink(keyExtractor KeyExtractor) *MapSink {
-	return &MapSink{keyExtractor: keyExtractor, m: make(map[string]interface{})}
+	return &MapSink{keyExtractor: keyExtractor, m: make(map[interface{}]interface{})}
 }
 
 func (this *MapSink) Dump(object ...interface{}) error {
 	for _, elem := range object {
-		key, err := this.keyExtractor(elem)
-		if err != nil {
-			return err
+		key := this.keyExtractor(elem)
+		if key == nil {
+			return fmt.Errorf("cannot extract key from %+v", elem)
 		}
 		this.m[key] = elem
 	}
@@ -26,6 +28,6 @@ func (this *MapSink) CloseGracefully() error {
 	return nil
 }
 
-func (this *MapSink) Get() map[string]interface{} {
+func (this *MapSink) Get() map[interface{}]interface{} {
 	return this.m
 }
