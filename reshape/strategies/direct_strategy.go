@@ -5,6 +5,10 @@ import "github.com/matang28/reshape/reshape"
 type directStrategy struct {
 }
 
+func NewDirectStrategy() *directStrategy {
+	return &directStrategy{}
+}
+
 func (this *directStrategy) Solve(source <-chan interface{}, handlers []interface{}) error {
 SourceLoop:
 	for item := range source {
