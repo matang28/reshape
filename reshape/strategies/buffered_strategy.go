@@ -69,6 +69,8 @@ func processBatches(queue chan []interface{}, errors chan error, handlers []inte
 				runFilter(handler.(reshape.Filter), &batch, errors)
 			case reshape.Sink:
 				runSink(handler, batch, errors)
+			default:
+				reshape.Report(reshape.NewUnrecognizedHandler(handler), errors)
 			}
 		}
 	}
@@ -84,7 +86,14 @@ func runSink(handler interface{}, batch []interface{}, errors chan error) {
 		}
 	}()
 
-	err := handler.(reshape.Sink).Dump(batch...)
+	var dump []interface{}
+	for _, elem := range batch {
+		if elem != nil {
+			dump = append(dump, elem)
+		}
+	}
+
+	err := handler.(reshape.Sink).Dump(dump...)
 	reshape.Report(reshape.NewSinkError(err), errors)
 }
 
@@ -99,6 +108,9 @@ func runTransform(transformation reshape.Transformation, batch *[]interface{}, e
 	}()
 
 	for i := 0; i < len(*batch); i++ {
+		if (*batch)[i] == nil {
+			continue
+		}
 		out, err := transformation((*batch)[i])
 		reshape.Report(reshape.NewTransformationError(err), errors)
 		(*batch)[i] = out
