@@ -11,8 +11,12 @@ func NewDirectStrategy() *directStrategy {
 
 func (this *directStrategy) Solve(source <-chan interface{}, errors chan error, handlers []interface{}) {
 SourceLoop:
-	for item := range source {
-		var temp = item
+	for {
+		var temp, ok = <-source
+		if !ok {
+			return
+		}
+
 		for _, handler := range handlers {
 			if temp == nil {
 				continue

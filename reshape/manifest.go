@@ -17,11 +17,15 @@ type Source interface {
 	// that we can shape, filter and dump to other data sinks.
 	Stream() Stream
 
+	// Will return the channel responsible for the communication between the
+	// source and the stream
+	GetChannel() <-chan interface{}
+
 	// Close will be called by reshape, to signal the data
 	// source that it shouldn't generate any new events
 	// allowing for the already created events to pass
 	// through the pipeline.
-	CloseGracefully() error
+	Close() error
 }
 
 // A sink is a type that acts as a data source (write)
@@ -34,7 +38,7 @@ type Sink interface {
 	// sink that it shouldn't accept any new events
 	// allowing for the already created events to pass
 	// through the pipeline.
-	CloseGracefully() error
+	Close() error
 }
 
 // A stream is a type that acts as a stream of objects.
@@ -52,8 +56,14 @@ type Stream interface {
 
 	// Will trigger the source to start generating events to be processed by the pipeline.
 	Run(strategy StreamingStrategy, errors chan error)
+
+	Close() error
 }
 
+// Streaming strategy decides how to process the stream elements
 type StreamingStrategy interface {
+	// Solve will be called by the stream, it should pull elements from the source channels
+	// and process the stream elements with the array of handlers (transformations, filters, sinks, etc...)
+	// an error channel is used to report errors thrown while processing the stream.
 	Solve(source <-chan interface{}, errors chan error, handlers []interface{})
 }

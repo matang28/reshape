@@ -27,7 +27,7 @@ func TestMapSource_Stream(t *testing.T) {
 		return o.Value, nil
 	}).Filter(func(in interface{}) bool {
 		return in != nil
-	}).Sink(sink).Run(strategies.NewDirectStrategy())
+	}).Sink(sink).Run(strategies.NewDirectStrategy(), nil)
 
 	for k, v := range expected {
 		source.Put(k, v)

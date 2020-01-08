@@ -24,7 +24,7 @@ func (this *MapSink) Dump(object ...interface{}) error {
 	return nil
 }
 
-func (this *MapSink) CloseGracefully() error {
+func (this *MapSink) Close() error {
 	return nil
 }
 

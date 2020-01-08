@@ -23,7 +23,10 @@ func (this *bufferedStrategy) Solve(source <-chan interface{}, errors chan error
 
 	for {
 		select {
-		case item := <-source:
+		case item, ok := <-source:
+			if !ok {
+				return
+			}
 			batch = append(batch, item)
 			if len(batch) == this.batchSize {
 				this.flush(&batch, errors)

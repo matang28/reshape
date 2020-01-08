@@ -12,7 +12,7 @@ func TestArraySource_Stream(t *testing.T) {
 	source := NewArraySource()
 	sink := sinks.NewArraySink()
 
-	go source.Stream().Filter(filterOdds).Sink(sink).Run(strategies.NewDirectStrategy())
+	go source.Stream().Filter(filterOdds).Sink(sink).Run(strategies.NewDirectStrategy(), nil)
 	source.Append(1, 2, 3, 4, 5, 6, "7")
 
 	time.Sleep(100 * time.Millisecond)

@@ -14,17 +14,23 @@ func NewArraySource() *ArraySource {
 }
 
 func (this *ArraySource) Stream() reshape.Stream {
-	return reshape.NewStream(this.ch)
+	return reshape.NewStream(this)
 }
 
-func (this *ArraySource) CloseGracefully() error {
+func (this *ArraySource) GetChannel() <-chan interface{} {
+	return this.ch
+}
+
+func (this *ArraySource) Close() error {
 	close(this.ch)
 	return nil
 }
 
 func (this *ArraySource) Append(elements ...interface{}) {
 	this.array = append(this.array, elements...)
-	for _, e := range elements {
-		this.ch <- e
-	}
+	go func() {
+		for _, e := range elements {
+			this.ch <- e
+		}
+	}()
 }

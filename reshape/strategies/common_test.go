@@ -53,6 +53,6 @@ func (this *badSink) Dump(object ...interface{}) error {
 	return fmt.Errorf("")
 }
 
-func (this *badSink) CloseGracefully() error {
+func (this *badSink) Close() error {
 	return fmt.Errorf("")
 }

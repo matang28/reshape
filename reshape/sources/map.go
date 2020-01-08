@@ -19,17 +19,23 @@ func NewMapSource() *MapSource {
 }
 
 func (this *MapSource) Stream() reshape.Stream {
-	return reshape.NewStream(this.ch)
+	return reshape.NewStream(this)
 }
 
-func (this *MapSource) CloseGracefully() error {
+func (this *MapSource) GetChannel() <-chan interface{} {
+	return this.ch
+}
+
+func (this *MapSource) Close() error {
 	close(this.ch)
 	return nil
 }
 
 func (this *MapSource) Put(key, value interface{}) {
 	this.m[key] = value
-	this.ch <- MapEntry{Key: key, Value: value}
+	go func() {
+		this.ch <- MapEntry{Key: key, Value: value}
+	}()
 }
 
 func (this *MapSource) Get(key interface{}) (interface{}, bool) {

@@ -13,7 +13,7 @@ func (this *ArraySink) Dump(object ...interface{}) error {
 	return nil
 }
 
-func (this *ArraySink) CloseGracefully() error {
+func (this *ArraySink) Close() error {
 	return nil
 }
 

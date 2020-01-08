@@ -3,10 +3,11 @@ package reshape
 type stream struct {
 	handlers   []interface{}
 	sourceChan <-chan interface{}
+	source     Source
 }
 
-func NewStream(sourceChan <-chan interface{}) Stream {
-	return &stream{sourceChan: sourceChan}
+func NewStream(source Source) Stream {
+	return &stream{sourceChan: source.GetChannel(), source: source}
 }
 
 func (this *stream) Filter(filter Filter) Stream {
@@ -25,5 +26,9 @@ func (this *stream) Sink(sink Sink) Stream {
 }
 
 func (this *stream) Run(strategy StreamingStrategy, errors chan error) {
-	strategy.Solve(this.sourceChan, errors, this.handlers)
+	go strategy.Solve(this.sourceChan, errors, this.handlers)
+}
+
+func (this *stream) Close() error {
+	return this.source.Close()
 }
