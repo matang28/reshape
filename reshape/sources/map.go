@@ -1,6 +1,7 @@
 package sources
 
 import (
+	"fmt"
 	"github.com/matang28/reshape/reshape"
 )
 
@@ -10,8 +11,9 @@ type MapEntry struct {
 }
 
 type MapSource struct {
-	m  map[interface{}]interface{}
-	ch chan interface{}
+	m        map[interface{}]interface{}
+	ch       chan interface{}
+	isClosed bool
 }
 
 func NewMapSource() *MapSource {
@@ -28,14 +30,19 @@ func (this *MapSource) GetChannel() <-chan interface{} {
 
 func (this *MapSource) Close() error {
 	close(this.ch)
+	this.isClosed = true
 	return nil
 }
 
-func (this *MapSource) Put(key, value interface{}) {
-	this.m[key] = value
-	go func() {
-		this.ch <- MapEntry{Key: key, Value: value}
-	}()
+func (this *MapSource) Put(key, value interface{}) error {
+	if !this.isClosed {
+		this.m[key] = value
+		go func() {
+			this.ch <- MapEntry{Key: key, Value: value}
+		}()
+		return nil
+	}
+	return fmt.Errorf("cannot put new entries to closed MapSource")
 }
 
 func (this *MapSource) Get(key interface{}) (interface{}, bool) {
