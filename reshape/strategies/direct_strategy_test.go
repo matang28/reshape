@@ -78,7 +78,7 @@ func TestDirectStrategy_Solve_UnrecognizedHandler(t *testing.T) {
 
 	for i := 0; i < 3; i++ {
 		err := <-errors
-		_, ok := err.(*reshape.UnrecognizedHandler)
+		_, ok := err.(*reshape.UnrecognizedHandlerError)
 		assert.True(t, ok)
 	}
 }

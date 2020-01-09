@@ -77,6 +77,11 @@ func (this *governor) GetStats() Stats {
 	return this.stats
 }
 
+// Get the errors channel:
+func (this *governor) Errors() chan error {
+	return this.errors
+}
+
 func (this *governor) handleErrorLimits() {
 	for {
 		err := <-this.errors

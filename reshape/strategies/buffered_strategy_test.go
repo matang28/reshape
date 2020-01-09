@@ -95,6 +95,6 @@ func TestBufferedStrategy_Solve_UnrecognizedHandler(t *testing.T) {
 	tick()
 
 	err := <-errors
-	_, ok := err.(*reshape.UnrecognizedHandler)
+	_, ok := err.(*reshape.UnrecognizedHandlerError)
 	assert.True(t, ok)
 }
